@@ -1,25 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// import App from '@/App.vue'; // Ajuste o caminho conforme necessário
-import App from '../App.vue'
-import MonthEdit from '../components/editMonth.vue';
+import Home from '../views/Home.vue';
+import MonthDetail from '../views/MonthDetail.vue';
+import MonthEdit from '../views/MonthEdit.vue';
 
+// Definir as rotas
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: App,
+    name: 'Home',
+    component: Home,
+    meta: { breadcrumb: 'Início' }
   },
   {
-    path: '/edit/:month',
+    path: '/month/:month',
+    name: 'MonthDetail',
+    component: MonthDetail,
+    meta: { breadcrumb: 'Detalhes da escala' },
+    props: true
+  },
+  {
+    path: '/month/:month/edit',
     name: 'MonthEdit',
     component: MonthEdit,
-    props: true, // Permite passar parâmetros como props
-  },
+    meta: { breadcrumb: 'Editar escala' }
+  }
 ];
 
+// Criar a instância do router
 const router = createRouter({
   history: createWebHistory(),
-  routes,
+  routes
 });
 
 export default router;
