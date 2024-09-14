@@ -10,7 +10,7 @@
                 <!-- Sábado -->
                 <div 
                     v-if="!isQuerySunday" 
-                    :class="[isQuerySaturday? 'col-md-12' : 'col-md-6']"
+                    :class="[isQuerySaturday? 'col-md-12 mb-4' : 'col-md-6']"
                 >
                     <div :class="['w-100 card p-3 border', isQuerySaturday ? 'border-success':'border-secondary']">
                         <div v-if="saturdays.length">

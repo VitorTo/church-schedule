@@ -17,7 +17,7 @@
 						</div>
 						<div class="card-footer">
 							<div class="row">
-								<div class="col-md-6">
+								<div class="col-md-6 mb-2">
 									<button class="w-100 btn btn-success" @click="viewMonth(index)">Visualizar</button>
 								</div>
 								<div class="col-md-6">
