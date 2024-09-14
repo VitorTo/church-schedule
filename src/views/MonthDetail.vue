@@ -1,17 +1,22 @@
 <template>
 	<div class="container mt-5">
 
-		<div class="row">
+		<!-- <div class="row">
 			<div class="col-6">
 				<button @click="orderDate()" class="btn btn-success w-100">Organizar por data</button>
 			</div>
 			<div class="col-6">
 				<button @click="revertOrderDate()" class="btn btn-success w-100">Organizar por dias</button>
 			</div>
+		</div> -->
+		<div class="row">
+			<div class="col-12">
+				<button @click="captureScreen()" class="btn btn-success w-100">Enviar escala WhatsApp</button>
+			</div>
 		</div>
 		<hr>
 
-		<div v-if="days?.length > 0" class="row">
+		<div id="md-scale-content" v-if="days?.length > 0" class="row">
 			<div class="col-md-4 mb-4" v-for="(day, index) in days" :key="index">
 				<div class="card h-100">
 					<div class="card-body">
@@ -40,6 +45,7 @@
 
 <script>
 import { formatDateValue } from '../utils/functions.js'
+import html2canvas from 'html2canvas';
 
 export default {
 	name: 'MonthDetail',
@@ -58,6 +64,13 @@ export default {
 		this.loadMonthData();
 	},
 	methods: {
+		captureScreen() {
+			const element = document.getElementById('md-scale-content'); // ou outro elemento da tela
+			html2canvas(element).then(canvas => {
+				const image = canvas.toDataURL('image/png');
+				this.sendToWhatsApp(image);
+			});
+		},
 		editMonth(day, index) {
 			const dayType = day?.dayOfWeek === 'Sábado' ? 'saturday' : 'sunday';
 
@@ -87,6 +100,15 @@ export default {
 		},
 		revertOrderDate() {
 			this.days = [...this.detailsOrigin];
+		},
+		sendToWhatsApp(imageBase64) {
+      		// Aqui você cria um link para enviar pelo WhatsApp Web
+			const message = encodeURIComponent('Confira a captura de tela');
+			const imageEncoded = encodeURIComponent(imageBase64);
+			
+			// Abre o WhatsApp Web com a mensagem e o link da imagem (base64 não funciona diretamente no WhatsApp)
+			const whatsappUrl = `https://wa.me/?text=${message} - ${imageEncoded}`;
+			window.open(whatsappUrl, '_blank');
 		}
 
 	}
