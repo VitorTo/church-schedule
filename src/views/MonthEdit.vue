@@ -1,20 +1,52 @@
 <template>
     <div class="content-scale">
         <div class="page-title mb-4">
-            <h1>Escala de Trabalhadores - {{ months[month]?.name }}</h1>
+            <!-- <h1>Escala de Trabalhadores - {{ months[month]?.name }}</h1> -->
         </div>
 
         <div class="scale-content-day">
+            <div 
+                v-if="!isQuerySunday && !isQuerySaturday"
+                class="row mb-4"
+            >
+                <div class="col-6">
+                    <button 
+                        @click="tab = 'isSaturday'"
+                        class="w-100 btn btn-success"
+                        :disabled="tab == 'isSaturday'"
+                    >
+                        VER SÁBADOS
+                    </button>
+                </div>
+                <div class="col-6">
+                    <button 
+                        @click="tab = 'isSunday'"
+                        class="w-100 btn btn-success"
+                        :disabled="tab == 'isSunday'"
+                    >
+                        VER DOMINGOS
+                    </button>
+                </div>
+            </div>
 
             <div class="row">
                 <!-- Sábado -->
                 <div 
-                    v-if="!isQuerySunday" 
+                    v-if="tab == 'isSaturday' && !isQuerySunday" 
                     :class="[isQuerySaturday? 'col-md-12 mb-4' : 'col-md-6']"
                 >
                     <div :class="['w-100 card p-3 border', isQuerySaturday ? 'border-success':'border-secondary']">
                         <div v-if="saturdays.length">
                             <h3>Sábado - {{ formatDate(saturdays[currentSaturdayIndex]) }}</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="w-100 btn-group btn-group-sm" role="group" aria-label="Default button group">
+                                        <button type="button" class="btn btn-success" @click="prevSaturday" :disabled="currentSaturdayIndex === 0">Anterior</button>
+                                        <button type="button" class="btn btn-success" @click="nextSaturday" :disabled="currentSaturdayIndex === saturdays.length - 1">Próximo</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
                             <div v-for="sector in sectors" :key="sector.id" class="mb-2">
                                 <label>{{ sector.name }}</label>
                                 <el-select v-model="schedule[saturdays[currentSaturdayIndex]][sector.id]" multiple
@@ -28,14 +60,8 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="w-100 btn-group" role="group" aria-label="Default button group">
-                                    <button :class="['btn btn-success', currentSaturdayIndex === 0 ?? 'btn-disabled' ]" @click="prevSaturday" :disabled="currentSaturdayIndex === 0">Anterior</button>
-                                    <button :class="['btn btn-success', currentSaturdayIndex === saturdays.length - 1 ?? 'btn-disabled']" @click="nextSaturday" :disabled="currentSaturdayIndex === saturdays.length - 1">Próximo</button>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="w-100 btn-group" role="group" aria-label="Default button group">
-                                    <button class="btn btn-success" @click="saveScheduleIndex(schedule[saturdays[currentSaturdayIndex]], saturdays[currentSaturdayIndex])">Salvar</button>
-                                    <button class="btn btn-success" @click="clearScheduleIndex(saturdays[currentSaturdayIndex])">Limpar </button>
+                                    <button class="btn btn-success" @click="saveScheduleIndex(schedule[saturdays[currentSaturdayIndex]], saturdays[currentSaturdayIndex])">Salvar escala</button>
+                                    <button class="btn btn-success" @click="clearScheduleIndex(saturdays[currentSaturdayIndex])">Limpar escala</button>
                                 </div>
                             </div>
                         </div>
@@ -44,12 +70,21 @@
 
                 <!-- Domingo -->
                 <div 
-                    v-if="!isQuerySaturday" 
+                    v-if="tab == 'isSunday' && !isQuerySaturday" 
                     :class="[isQuerySunday? 'col-md-12' : 'col-md-6']"
                 >            
                     <div :class="['w-100 card p-3 border', isQuerySunday ? 'border-success':'border-secondary']">            
                         <div v-if="sundays.length">
                             <h3>Domingo - {{ formatDate(sundays[currentSundayIndex]) }}</h3>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="w-100 btn-group btn-group-sm" role="group" aria-label="Default button group">
+                                        <button class="btn btn-success" @click="prevSunday" :disabled="currentSundayIndex === 0">Anterior</button>
+                                        <button class="btn btn-success" @click="nextSunday" :disabled="currentSundayIndex === sundays.length - 1">Próximo</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
                             <div v-for="sector in sectors" :key="sector.id" class="mb-2">
                                 <label>{{ sector.name }}</label>
                                 <el-select v-model="schedule[sundays[currentSundayIndex]][sector.id]" multiple
@@ -61,12 +96,6 @@
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-md-6">
-                                <div class="w-100 btn-group" role="group" aria-label="Default button group">
-                                    <button :class="['btn btn-success', currentSundayIndex === 0 ?? 'btn-disabled' ]" @click="prevSunday" :disabled="currentSundayIndex === 0">Anterior</button>
-                                    <button :class="['btn btn-success', currentSundayIndex === sundays.length - 1 ?? 'btn-disabled']" @click="nextSunday" :disabled="currentSundayIndex === sundays.length - 1">Próximo</button>
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="w-100 btn-group" role="group" aria-label="Default button group">
                                     <button class="btn btn-success" @click="saveScheduleIndex(schedule[sundays[currentSundayIndex]], sundays[currentSundayIndex])">Salvar</button>
@@ -93,6 +122,7 @@ export default {
     },
     data() {
         return {
+            tab: "isSaturday",
             months: [
                 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -244,7 +274,7 @@ export default {
 
         nextSunday() {
             if (this.currentSundayIndex < this.sundays.length - 1) {
-                this.currentSundayIndex++;
+                this.currentSundayIndex = 1+ this.currentSundayIndex;
             }
         }
     },
@@ -261,16 +291,19 @@ export default {
         } else {
             this.initializeSchedule();
         }
-    },
-    // updated() {     
-    beforeUpdate() {     
-        if(this.$route.query) {
-            const currentDay = this.isQuerySaturday ? 'saturday' : 'sunday';
-            const dateIndex = new Date(this.$route.query[currentDay]).getTime();
-            const currentIndex = this[`${currentDay}s`].findIndex(day => day.getTime() === dateIndex);
-            const indexOf = `current${capitalize(currentDay)}Index`;
-            this[indexOf] = currentIndex > 0 ? currentIndex : 0
-        }
+
+        this.$nextTick(() => {
+            if(this.isQuerySaturday || this.isQuerySunday) {
+                console.log('else', this.$route.query )
+                const currentDay = this.isQuerySaturday ? 'saturday' : 'sunday';
+                this.tab = `is${capitalize(currentDay)}`;
+
+                const dateIndex = new Date(this.$route.query[currentDay]).getTime();
+                const currentIndex = this[`${currentDay}s`].findIndex(day => day.getTime() === dateIndex);
+                const indexOf = `current${capitalize(currentDay)}Index`;
+                this[indexOf] = currentIndex > 0 ? currentIndex : 0
+            }
+        })
     },
     computed: {
         isMonth() {
@@ -285,61 +318,3 @@ export default {
     }
 };
 </script>
-
-<style lang="scss">
-.content-scale {
-    .content {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    .day-views {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .day-view {
-        flex: 1;
-        margin: 0 10px;
-    }
-
-    .navigation {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
-
-    .day-container {
-        margin-bottom: 20px;
-    }
-
-    select {
-        margin-bottom: 10px;
-    }
-
-    button {
-        margin-top: 10px;
-        padding: 10px 20px;
-        background-color: #28a745;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #218838;
-    }
-
-    .actions {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .actions button {
-        margin: 0 10px;
-    }
-}
-</style>

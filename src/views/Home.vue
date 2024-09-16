@@ -7,10 +7,46 @@
 			</div>
 
 			<div class="row">
-				<div v-for="(month, index) in months" :key="index" class="col-md-3 ">
-					<div v-if="!canEditMonth(index)" class="flag">
-
+				<div :key="currentMonth" class="col-md-3 ">
+					<div class="card w-100 mb-4">
+						<div class="card-body">
+							<h2 class="card-title text-center">{{ months[currentMonth].name }}</h2>
+						</div>
+						<div class="card-footer">
+							<div class="row">
+								<div class="col-md-6 mb-2">
+									<button class="w-100 btn btn-success" @click="viewMonth(currentMonth)">Visualizar</button>
+								</div>
+								<div class="col-md-6">
+									<button 
+										:class="['w-100 btn btn-success', !canEditMonth(currentMonth) ? 'btn-disabled' : '']" 
+										@click="editMonth(currentMonth)"
+										:disabled="!canEditMonth(currentMonth)"
+									>
+										Editar
+									</button>
+								</div>
+							</div>							
+						</div>
 					</div>
+				</div>
+			</div>
+
+			<hr>
+			<div class="actions">
+				<button
+					@click="showAllMonths = !showAllMonths"
+					class="btn btn-success"
+				>
+					{{ !showAllMonths ? 'Visualizar Todos os meses' : 'Esconder meses' }}
+				</button>
+			</div>
+			<hr>
+			<div
+				v-if="showAllMonths" 
+				class="row"
+			>
+				<div v-for="(month, index) in months" :key="index" class="col-md-3 ">
 					<div class="card w-100 mb-4">
 						<div class="card-body">
 							<h2 class="card-title text-center">{{ month.name }}</h2>
@@ -48,6 +84,7 @@ export default {
 				{ name: 'Maio' }, { name: 'Junho' }, { name: 'Julho' }, { name: 'Agosto' },
 				{ name: 'Setembro' }, { name: 'Outubro' }, { name: 'Novembro' }, { name: 'Dezembro' }
 			],
+			showAllMonths: false,
 			currentMonth: new Date().getMonth(), // Mês atual (0-11)
 			currentYear: new Date().getFullYear(),
 		};
