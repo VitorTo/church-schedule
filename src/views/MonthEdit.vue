@@ -1,12 +1,11 @@
 <template>
     <div class="content-scale">
         <div class="page-title mb-4">
-            <!-- <h1>Escala de Trabalhadores - {{ months[month]?.name }}</h1> -->
+            <h1>Escala de {{ months[month] }}</h1> 
         </div>
-
         <div class="scale-content-day">
             <div 
-                v-if="!isQuerySunday && !isQuerySaturday"
+                v-if="isViewMobile ? isEditCurrentDay : false"
                 class="row mb-4"
             >
                 <div class="col-6">
@@ -32,14 +31,17 @@
             <div class="row">
                 <!-- Sábado -->
                 <div 
-                    v-if="tab == 'isSaturday' && !isQuerySunday" 
-                    :class="[isQuerySaturday? 'col-md-12 mb-4' : 'col-md-6']"
+                    v-if="isViewMobile ? tab == 'isSaturday' && !isQuerySunday : true" 
+                    class="col-md-6 mb-4"
                 >
                     <div :class="['w-100 card p-3 border', isQuerySaturday ? 'border-success':'border-secondary']">
                         <div v-if="saturdays.length">
-                            <h3>Sábado - {{ formatDate(saturdays[currentSaturdayIndex]) }}</h3>
-                            <div class="row">
-                                <div class="col-md-6">
+                            <h3 class="text-center">Sábado - {{ formatDate(saturdays[currentSaturdayIndex]) }}</h3>
+                            <div
+                                v-if="isEditCurrentDay" 
+                                class="row"
+                            >
+                                <div class="col-md-12">
                                     <div class="w-100 btn-group btn-group-sm" role="group" aria-label="Default button group">
                                         <button type="button" class="btn btn-success" @click="prevSaturday" :disabled="currentSaturdayIndex === 0">Anterior</button>
                                         <button type="button" class="btn btn-success" @click="nextSaturday" :disabled="currentSaturdayIndex === saturdays.length - 1">Próximo</button>
@@ -49,16 +51,25 @@
                             <hr>
                             <div v-for="sector in sectors" :key="sector.id" class="mb-2">
                                 <label>{{ sector.name }}</label>
-                                <el-select v-model="schedule[saturdays[currentSaturdayIndex]][sector.id]" multiple
-                                    placeholder="Selecione os trabalhadores">
-                                    <el-option v-for="worker in workers" :key="worker.id" :label="worker.name"
-                                        :value="worker.id"></el-option>
+                                <el-select 
+                                    v-model="schedule[saturdays[currentSaturdayIndex]][sector.id]" 
+                                    multiple
+                                    filterable
+                                    :reserve-keyword="true"
+                                    placeholder="Selecione os trabalhadores"
+                                >
+                                    <el-option 
+                                        v-for="worker in workers" 
+                                        :key="worker.id" 
+                                        :label="worker.name"
+                                        :value="worker.id"
+                                    ></el-option>
                                 </el-select>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="w-100 btn-group" role="group" aria-label="Default button group">
                                     <button class="btn btn-success" @click="saveScheduleIndex(schedule[saturdays[currentSaturdayIndex]], saturdays[currentSaturdayIndex])">Salvar escala</button>
                                     <button class="btn btn-success" @click="clearScheduleIndex(saturdays[currentSaturdayIndex])">Limpar escala</button>
@@ -70,14 +81,17 @@
 
                 <!-- Domingo -->
                 <div 
-                    v-if="tab == 'isSunday' && !isQuerySaturday" 
-                    :class="[isQuerySunday? 'col-md-12' : 'col-md-6']"
+                    v-if="isViewMobile ? tab == 'isSunday' && !isQuerySaturday : true" 
+                    class="col-md-6 mb-4"
                 >            
                     <div :class="['w-100 card p-3 border', isQuerySunday ? 'border-success':'border-secondary']">            
                         <div v-if="sundays.length">
                             <h3>Domingo - {{ formatDate(sundays[currentSundayIndex]) }}</h3>
-                            <div class="row">
-                                <div class="col-md-6">
+                            <div 
+                                v-if="isEditCurrentDay" 
+                                class="row"
+                            >
+                                <div class="col-md-12">
                                     <div class="w-100 btn-group btn-group-sm" role="group" aria-label="Default button group">
                                         <button class="btn btn-success" @click="prevSunday" :disabled="currentSundayIndex === 0">Anterior</button>
                                         <button class="btn btn-success" @click="nextSunday" :disabled="currentSundayIndex === sundays.length - 1">Próximo</button>
@@ -87,16 +101,25 @@
                             <hr>
                             <div v-for="sector in sectors" :key="sector.id" class="mb-2">
                                 <label>{{ sector.name }}</label>
-                                <el-select v-model="schedule[sundays[currentSundayIndex]][sector.id]" multiple
-                                    placeholder="Selecione os trabalhadores">
-                                    <el-option v-for="worker in workers" :key="worker.id" :label="worker.name"
-                                        :value="worker.id"></el-option>
+                                <el-select 
+                                    v-model="schedule[sundays[currentSundayIndex]][sector.id]" 
+                                    multiple
+                                    filterable
+                                    :reserve-keyword="true"
+                                    placeholder="Selecione os trabalhadores"
+                                >
+                                    <el-option 
+                                        v-for="worker in workers" 
+                                        :key="worker.id" 
+                                        :label="worker.name"
+                                        :value="worker.id"
+                                    ></el-option>
                                 </el-select>
                             </div>
                         </div>
                         <hr>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="w-100 btn-group" role="group" aria-label="Default button group">
                                     <button class="btn btn-success" @click="saveScheduleIndex(schedule[sundays[currentSundayIndex]], sundays[currentSundayIndex])">Salvar</button>
                                     <button class="btn btn-success" @click="clearScheduleIndex(sundays[currentSundayIndex])">Limpar </button>
@@ -107,12 +130,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- FEEDBACK -->
+        <el-dialog v-model="showDialogSave" title="Escala salva com sucesso!" width="500">
+            <span >
+                Deseja compartilhar essa escala no WHATSAPP?
+            </span>
+            <template #footer>
+            <div class="dialog-footer">
+                <div class="row">
+                    <div class="col-4">
+                        <button class="w-100 btn btn-secondary" @click="showDialogSave = false">Não, Voltar</button>
+                    </div>
+                    <div class="col-4">
+                        <button class="w-100 btn btn-primary" @click="sharedToWhatsApp(currentDayIndex)">
+                            Compartilhar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </template>
+        </el-dialog>
+
     </div>
 </template>
 
 <script>
 import { ElSelect, ElOption } from 'element-plus'
-import { capitalize } from '../utils/functions.js'
+import { capitalize, isMobile } from '../utils/functions.js'
 
 export default {
     name: "MonthEdit",
@@ -122,21 +167,45 @@ export default {
     },
     data() {
         return {
+            showDialogSave: false,
             tab: "isSaturday",
             months: [
                 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
             ],
             workers: [
-                { id: 1, name: 'Maria' },
-                { id: 2, name: 'Vítor' },
-                // Adicione mais trabalhadores conforme necessário
+                { id: 1, name: 'Adriana' },
+                { id: 2, name: 'Amanda' },
+                { id: 3, name: 'Antônio' },
+                { id: 4, name: 'Celina' },
+                { id: 5, name: 'Célia B' },
+                { id: 6, name: 'Francisco G' },
+                { id: 7, name: 'Francisco P' },
+                { id: 8, name: 'Gabriel' },
+                { id: 9, name: 'Ítalo' },
+                { id: 10, name: 'Madalena' },
+                { id: 11, name: 'Maria C' },
+                { id: 12, name: 'Maria L' },
+                { id: 13, name: 'Maria J' },
+                { id: 14, name: 'Neuma' },
+                { id: 15, name: 'Nílza' },
+                { id: 16, name: 'Ronei' },
+                { id: 17, name: 'Selma' },
+                { id: 18, name: 'Vicente' },
+                { id: 19, name: 'Vitor G' }
             ],
             sectors: [
-                { id: 1, name: 'Sensit' },
+                { id: 1, name: 'Sensitivo' },
                 { id: 2, name: 'Sustentação' },
-                { id: 3, name: 'Recepção' },
-                { id: 4, name: 'Sam da Água' },
+                { id: 3, name: 'Fluidificação das Águas' },
+                { id: 4, name: 'Ave Maria' },
+                { id: 5, name: 'Samaritana' },
+                { id: 6, name: 'Samaritana da Água' },
+                { id: 7, name: 'Recepição' },
+                { id: 8, name: 'Fila' },
+                { id: 9, name: 'Segurança' },
+                { id: 10, name: 'Coordenadora' },
+                { id: 11, name: 'Sonoplastia' }
                 // Adicione mais setores conforme necessário
             ],
             schedule: {},
@@ -145,7 +214,8 @@ export default {
             currentView: 'saturday',
             currentSaturdayIndex: 0,
             currentSundayIndex: 0,
-            month:null
+            currentDayIndex: null, 
+            month: null
         };
     },
     methods: {
@@ -220,18 +290,22 @@ export default {
 
         saveScheduleIndex(value, index) {
             this.schedule[index] = value;
+            this.currentDayIndex = index;
             this.saveSchedule()
+            
         },
         clearScheduleIndex(index) {
             this.schedule[index] = {};
             this.saveSchedule()
         },
 
-        saveSchedule() {
+        saveSchedule(showAlert = true) {
             this.saveDetail()
 
             localStorage.setItem(`churchSchedule_${this.month}`, JSON.stringify(this.schedule));
-            alert('Escala salva com sucesso!');
+            if(showAlert) {
+                this.showDialogSave = true;
+            }    
         },
 
         clearSchedule() {
@@ -262,6 +336,7 @@ export default {
 
         nextSaturday() {
             if (this.currentSaturdayIndex < this.saturdays.length - 1) {
+                this.saveSchedule(false)
                 this.currentSaturdayIndex++;
             }
         },
@@ -274,8 +349,39 @@ export default {
 
         nextSunday() {
             if (this.currentSundayIndex < this.sundays.length - 1) {
+                this.saveSchedule(false)
                 this.currentSundayIndex = 1+ this.currentSundayIndex;
             }
+        },
+        sharedToWhatsApp() {
+            const details = Object.keys(this.schedule).map(date => {
+                if(date == this.currentDayIndex) {
+                    const { dayOfWeek, formattedDate } = this.preFormatDate(date);
+                    const scale = this.schedule[date];
+    
+                    const sectorsText = this.sectors.map(sector => {
+                        const sectorId = sector?.id;
+                        const sectorName = sector?.name;
+    
+                        const sectorWorkers = this.workers
+                            .filter(worker => scale[sectorId]?.includes(worker.id))
+                            .map(worker => capitalize(worker.name));
+    
+                        if (sectorWorkers?.length > 0) {
+                            return `${sectorName}: ${sectorWorkers.join(', ')}`;
+                        } else {
+                            return null;
+                        }
+                    }).filter(value => value).join('\n');
+    
+                    return `${capitalize(dayOfWeek)} - ${formattedDate.toLocaleDateString('pt-BR')}\n${sectorsText}`;
+                }
+            }).join('\n');
+
+            const message = encodeURIComponent(`Escala da Igreja para o mês de ${this.months[this.month]}:\n\n${details.trim()}`);
+
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${message}`;
+            window.open(whatsappUrl, '_blank');
         }
     },
     mounted() {
@@ -314,6 +420,12 @@ export default {
         },
         isQuerySunday() {
             return this.$route.query.sunday != null
+        },
+        isEditCurrentDay() {
+            return !this.isQuerySunday && !this.isQuerySaturday
+        },
+        isViewMobile() {
+            return isMobile()
         }
     }
 };

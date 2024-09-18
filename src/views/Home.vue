@@ -3,14 +3,19 @@
 		<!-- Lista de Meses -->
 		<div class="scale-workes-home">
 			<div class="page-title mb-4">
-				<h1>Escala de Trabalhadores - Igreja</h1>
+				<h1>Gerenciador de Escala - RD</h1>
 			</div>
+			
+			<hr>
 
 			<div class="row">
+				<div class="info-section">
+					<h4 class="text-uppercase">Mês Atual:</h4>
+				</div>
 				<div :key="currentMonth" class="col-md-3 ">
 					<div class="card w-100 mb-4">
 						<div class="card-body">
-							<h2 class="card-title text-center">{{ months[currentMonth].name }}</h2>
+							<h2 class="card-title text-center text-uppercase">{{ months[currentMonth].name }}</h2>
 						</div>
 						<div class="card-footer">
 							<div class="row">
@@ -33,15 +38,15 @@
 			</div>
 
 			<hr>
-			<div class="actions">
+			<div class="col-md-6 actions mb-4">
 				<button
 					@click="showAllMonths = !showAllMonths"
-					class="btn btn-success"
+					class="w-100 btn btn-success"
 				>
 					{{ !showAllMonths ? 'Visualizar Todos os meses' : 'Esconder meses' }}
 				</button>
 			</div>
-			<hr>
+			
 			<div
 				v-if="showAllMonths" 
 				class="row"
@@ -76,6 +81,8 @@
 </template>
 
 <script>
+import { isMobile } from '../utils/functions.js'
+
 export default {
 	data() {
 		return {
@@ -89,6 +96,9 @@ export default {
 			currentYear: new Date().getFullYear(),
 		};
 	},
+	mounted() {
+		this.showAllMonths = !this.isViewMobile
+	},
 	methods: {
 		viewMonth(index) {
 			// Lógica para visualizar o mês selecionado
@@ -101,6 +111,11 @@ export default {
 		canEditMonth(index) {
 			// Só permitir edição de meses futuros ou o mês atual
 			return index >= this.currentMonth;
+		},
+	},
+	computed: {
+		isViewMobile() {
+			return isMobile()
 		}
 	}
 };

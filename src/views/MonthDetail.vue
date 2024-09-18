@@ -1,6 +1,8 @@
 <template>
 	<div class="container mt-5">
-
+		<div class="page-title mb-4">
+            <h1>Escala de {{ months[month] }}</h1> 
+        </div>
 		<!-- <div class="row">
 			<div class="col-6">
 				<button @click="orderDate()" class="btn btn-success w-100">Organizar por data</button>
@@ -11,7 +13,7 @@
 		</div> -->
 		<div class="row">
 			<div class="col-12">
-				<button @click="captureScreen()" class="btn btn-success w-100">Enviar escala WhatsApp</button>
+				<button ref="btnShared" @click="captureScreen()" class="btn btn-success w-100">Enviar escala WhatsApp</button>
 			</div>
 		</div>
 		<hr>
@@ -56,20 +58,32 @@ export default {
 	},
 	data() {
 		return {
+			months: [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ],
 			days: [], // Dados que serão carregados do localStorage
-			detailsOrigin: []
+			detailsOrigin: [],
+			month: null
 		};
 	},
 	mounted() {
-		this.loadMonthData();
+		this.loadMonthData();	
+		this.month = this.$route.params.month;
+
 	},
 	methods: {
 		captureScreen() {
-			const element = document.getElementById('md-scale-content'); // ou outro elemento da tela
-			html2canvas(element).then(canvas => {
-				const image = canvas.toDataURL('image/png');
-				this.sendToWhatsApp(image);
-			});
+			// click ctrl + p - abrir imprimir
+			this.$refs.btnShared.classList.add('d-none')
+			window.print();
+			this.$refs.btnShared.classList.remove('d-none')
+
+			// const element = document.getElementById('md-scale-content'); // ou outro elemento da tela
+			// html2canvas(element).then(canvas => {
+			// 	const image = canvas.toDataURL('image/png');
+			// 	this.sendToWhatsApp(image);
+			// });
 		},
 		editMonth(day, index) {
 			const dayType = day?.dayOfWeek === 'Sábado' ? 'saturday' : 'sunday';
