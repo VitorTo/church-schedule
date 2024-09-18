@@ -133,7 +133,7 @@
 
         <!-- FEEDBACK -->
         <el-dialog v-model="showDialogSave" title="Escala salva com sucesso!" width="500">
-            <span >
+            <span>
                 Deseja compartilhar essa escala no WHATSAPP?
             </span>
             <template #footer>
@@ -368,13 +368,13 @@ export default {
                             .map(worker => capitalize(worker.name));
     
                         if (sectorWorkers?.length > 0) {
-                            return `${sectorName}: ${sectorWorkers.join(', ')}`;
+                            return `${sectorName.toUpperCase()}: *${sectorWorkers.toUpperCase().join('*, ')}`;
                         } else {
                             return null;
                         }
                     }).filter(value => value).join('\n');
     
-                    return `${capitalize(dayOfWeek)} - ${formattedDate.toLocaleDateString('pt-BR')}\n${sectorsText}`;
+                    return `*${dayOfWeek.toUpperCase()}* - *${formattedDate.toLocaleDateString('pt-BR')}*\n\n${sectorsText}`;
                 }
             }).join('\n');
 

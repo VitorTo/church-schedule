@@ -17,8 +17,7 @@
 			</div>
 		</div>
 		<hr>
-
-		<div id="md-scale-content" v-if="days?.length > 0" class="row">
+		<div ref="mdScaleContent" v-if="days?.length > 0" class="row pt-2">
 			<div class="col-md-4 mb-4" v-for="(day, index) in days" :key="index">
 				<div class="card h-100">
 					<div class="card-body">
@@ -42,6 +41,26 @@
 		<div v-else>
 			<p>Nenhum trabalhador encontrado para este mês.</p>
 		</div>
+		
+        <el-dialog v-model="showDialogSave" title="Escala copiada com sucesso!" width="500">
+            <span >
+                Para compartilhar, abra o whatsapp e cole a imagem
+            </span>
+            <template #footer>
+            <div class="dialog-footer">
+                <div class="row">
+                    <div class="col-4">
+                        <button class="w-100 btn btn-secondary" @click="showDialogSave = false">Fechar</button>
+                    </div>
+                    <div class="col-4">
+                        <button class="w-100 btn btn-primary" @click="openSharedWhatsApp(currentDayIndex)">
+                            Abrir WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </template>
+        </el-dialog>
 	</div>
 </template>
 
@@ -58,6 +77,7 @@ export default {
 	},
 	data() {
 		return {
+			showDialogSave: false,
 			months: [
                 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -74,16 +94,40 @@ export default {
 	},
 	methods: {
 		captureScreen() {
-			// click ctrl + p - abrir imprimir
-			this.$refs.btnShared.classList.add('d-none')
-			window.print();
-			this.$refs.btnShared.classList.remove('d-none')
+			const element = this.$refs.mdScaleContent;
+			html2canvas(element).then(canvas => {
+				canvas.toBlob(blob => {
+					if (navigator.clipboard) {
+						const item = new ClipboardItem({ 'image/png': blob });
+						navigator.clipboard.write([item]).then(() => {
+							this.showDialogSave = true
+						}).catch(err => {
+							console.error('Erro ao copiar a imagem: ', err);
+						});
+					} else {
+						alert('A API de Clipboard não é suportada pelo navegador.');
+					}
+				});
+			});
+		},
+		b64toBlob(b64Data, contentType='', sliceSize=512)  {
+			const byteCharacters = atob(b64Data);
+			const byteArrays = [];
 
-			// const element = document.getElementById('md-scale-content'); // ou outro elemento da tela
-			// html2canvas(element).then(canvas => {
-			// 	const image = canvas.toDataURL('image/png');
-			// 	this.sendToWhatsApp(image);
-			// });
+			for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+				const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+				const byteNumbers = new Array(slice.length);
+				for (let i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+				}
+
+				const byteArray = new Uint8Array(byteNumbers);
+				byteArrays.push(byteArray);
+			}
+				
+			const blob = new Blob(byteArrays, {type: contentType});
+			return blob;
 		},
 		editMonth(day, index) {
 			const dayType = day?.dayOfWeek === 'Sábado' ? 'saturday' : 'sunday';
@@ -115,13 +159,8 @@ export default {
 		revertOrderDate() {
 			this.days = [...this.detailsOrigin];
 		},
-		sendToWhatsApp(imageBase64) {
-      		// Aqui você cria um link para enviar pelo WhatsApp Web
-			const message = encodeURIComponent('Confira a captura de tela');
-			const imageEncoded = encodeURIComponent(imageBase64);
-			
-			// Abre o WhatsApp Web com a mensagem e o link da imagem (base64 não funciona diretamente no WhatsApp)
-			const whatsappUrl = `https://wa.me/?text=${message} - ${imageEncoded}`;
+		sendToWhatsApp() {
+			const whatsappUrl = `https://wa.me/`;
 			window.open(whatsappUrl, '_blank');
 		}
 
