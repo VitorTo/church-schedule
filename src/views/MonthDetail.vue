@@ -1,8 +1,20 @@
 <template>
-	<div class="container mt-5">
-		<div class="page-title mb-4">
-            <h1>Escala de {{ months[month] }}</h1> 
+	<div class="container">
+        <div class="page-title mb-2 row">
+            <div class="col-4 fs-6">
+                <button 
+                    class="btn btn-dark" 
+                    @click="backToHome()"
+                >
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Voltar
+                </button>
+            </div>
+            <div class="col-10 mt-2">
+                <h1>Escala de {{ months[month] }}</h1> 
+            </div>
         </div>
+        <hr class="mt-0">
 		<!-- <div class="row">
 			<div class="col-6">
 				<button @click="orderDate()" class="btn btn-success w-100">Organizar por data</button>
@@ -93,6 +105,9 @@ export default {
 
 	},
 	methods: {
+		backToHome() {
+			this.$router.push({ name: 'Home' });
+		},
 		captureScreen() {
 			const element = this.$refs.mdScaleContent;
 			html2canvas(element).then(canvas => {

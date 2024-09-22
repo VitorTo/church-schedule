@@ -3,31 +3,49 @@
 		<!-- Lista de Meses -->
 		<div class="scale-workes-home">
 			<div class="page-title mb-4">
-				<h1>Gerenciador de Escala - RD</h1>
+				<h1 class="text-uppercase">Gerenciador de Escala</h1>
 			</div>
 			
 			<hr>
 
 			<div class="row">
 				<div class="info-section">
-					<h4 class="text-uppercase">Mês Atual:</h4>
+					<span class="">Mês atual:</span>
 				</div>
-				<div :key="currentMonth" class="col-md-3 ">
+				<div :key="currentMonth" class="col-md-4 ">
 					<div class="card w-100 mb-4">
 						<div class="card-body">
-							<h2 class="card-title text-center text-uppercase">{{ months[currentMonth].name }}</h2>
+							<div class="card-content">
+								<div class="row">
+									<div class="col-3 d-flex align-items-center">
+										<div class="d-flex align-items-center">
+											<i class="d-flex justify-content-center w-100 rounded-circle p-3 bg-primary text-white fas fa-user-friends"></i>
+										</div>
+									</div>
+									<div class="col-9"> 
+										<span>
+											Escala de: 
+										</span>
+										<h2 class="text-uppercase">{{ months[currentMonth].name }}</h2>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="card-footer">
 							<div class="row">
-								<div class="col-md-6 mb-2">
-									<button class="w-100 btn btn-success" @click="viewMonth(currentMonth)">Visualizar</button>
+								<div class="col-6 mb-2">
+									<button class="w-100 btn btn-dark" @click="viewMonth(currentMonth)">
+										<i class="fas fa-eye"></i>
+										Visualizar
+									</button>
 								</div>
-								<div class="col-md-6">
+								<div class="col-6">
 									<button 
-										:class="['w-100 btn btn-success', !canEditMonth(currentMonth) ? 'btn-disabled' : '']" 
+										:class="['w-100 btn btn-dark', !canEditMonth(currentMonth) ? 'btn-disabled' : '']" 
 										@click="editMonth(currentMonth)"
 										:disabled="!canEditMonth(currentMonth)"
 									>
+										<i class="fas fa-edit"></i>
 										Editar
 									</button>
 								</div>
@@ -41,7 +59,7 @@
 			<div class="col-md-6 actions mb-4">
 				<button
 					@click="showAllMonths = !showAllMonths"
-					class="w-100 btn btn-success"
+					class="w-100 btn btn-dark"
 				>
 					{{ !showAllMonths ? 'Visualizar Todos os meses' : 'Esconder meses' }}
 				</button>
@@ -54,19 +72,37 @@
 				<div v-for="(month, index) in months" :key="index" class="col-md-3 ">
 					<div class="card w-100 mb-4">
 						<div class="card-body">
-							<h2 class="card-title text-center">{{ month.name }}</h2>
+							<div class="card-content">
+								<div class="row">
+									<div class="col-3 d-flex align-items-center">
+										<div class="d-flex align-items-center">
+											<i class="d-flex justify-content-center w-100 rounded-circle p-3 bg-primary text-white fas fa-user-friends"></i>
+										</div>
+									</div>
+									<div class="col-9"> 
+										<span>
+											Escala de: 
+										</span>
+										<h2 class="text-uppercase">{{ month.name }}</h2>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="card-footer">
 							<div class="row">
-								<div class="col-md-6 mb-2">
-									<button class="w-100 btn btn-success" @click="viewMonth(index)">Visualizar</button>
+								<div class="col-6 mb-2">
+									<button class="w-100 btn btn-dark" @click="viewMonth(index)">
+										<i class="fas fa-eye"></i>
+										Visualizar
+									</button>
 								</div>
-								<div class="col-md-6">
+								<div class="col-6">
 									<button 
-										:class="['w-100 btn btn-success', !canEditMonth(index) ? 'btn-disabled' : '']" 
+										:class="['w-100 btn btn-dark', !canEditMonth(index) ? 'btn-disabled' : '']" 
 										@click="editMonth(index)"
 										:disabled="!canEditMonth(index)"
 									>
+										<i class="fas fa-edit"></i>
 										Editar
 									</button>
 								</div>

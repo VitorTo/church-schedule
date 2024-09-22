@@ -1,8 +1,20 @@
 <template>
     <div class="content-scale">
-        <div class="page-title mb-4">
-            <h1>Escala de {{ months[month] }}</h1> 
+        <div class="page-title mb-2 row">
+            <div class="col-4 fs-6">
+                <button 
+                    class="btn btn-dark" 
+                    @click="backToHome()"
+                >
+                    <i class="fas fa-arrow-left me-1"></i>
+                    Voltar
+                </button>
+            </div>
+            <div class="col-10 mt-2">
+                <h1>Escala de {{ months[month] }}</h1> 
+            </div>
         </div>
+        <hr class="mt-0">
         <div class="scale-content-day">
             <div 
                 v-if="isViewMobile ? isEditCurrentDay : false"
@@ -11,7 +23,7 @@
                 <div class="col-6">
                     <button 
                         @click="tab = 'isSaturday'"
-                        class="w-100 btn btn-success"
+                        class="w-100 btn btn-dark"
                         :disabled="tab == 'isSaturday'"
                     >
                         VER SÁBADOS
@@ -20,7 +32,7 @@
                 <div class="col-6">
                     <button 
                         @click="tab = 'isSunday'"
-                        class="w-100 btn btn-success"
+                        class="w-100 btn btn-dark"
                         :disabled="tab == 'isSunday'"
                     >
                         VER DOMINGOS
@@ -43,8 +55,24 @@
                             >
                                 <div class="col-md-12">
                                     <div class="w-100 btn-group btn-group-sm" role="group" aria-label="Default button group">
-                                        <button type="button" class="btn btn-success" @click="prevSaturday" :disabled="currentSaturdayIndex === 0">Anterior</button>
-                                        <button type="button" class="btn btn-success" @click="nextSaturday" :disabled="currentSaturdayIndex === saturdays.length - 1">Próximo</button>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-dark" 
+                                            @click="prevSaturday" 
+                                            :disabled="currentSaturdayIndex === 0"
+                                        >
+                                            <i class="fas fa-chevron-left me-1"></i>
+                                            Anterior
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-dark" 
+                                            @click="nextSaturday" 
+                                            :disabled="currentSaturdayIndex === saturdays.length - 1"
+                                        >
+                                            Próximo
+                                            <i class="fas fa-chevron-right ms-1"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -54,7 +82,6 @@
                                 <el-select 
                                     v-model="schedule[saturdays[currentSaturdayIndex]][sector.id]" 
                                     multiple
-                                    filterable
                                     :reserve-keyword="true"
                                     placeholder="Selecione os trabalhadores"
                                 >
@@ -71,8 +98,20 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="w-100 btn-group" role="group" aria-label="Default button group">
-                                    <button class="btn btn-success" @click="saveScheduleIndex(schedule[saturdays[currentSaturdayIndex]], saturdays[currentSaturdayIndex])">Salvar escala</button>
-                                    <button class="btn btn-success" @click="clearScheduleIndex(saturdays[currentSaturdayIndex])">Limpar escala</button>
+                                    <button 
+                                        class="btn btn-outline-success"
+                                        @click="saveScheduleIndex(schedule[saturdays[currentSaturdayIndex]], saturdays[currentSaturdayIndex])"
+                                    >
+                                        <i class="fas fa-check me-1"></i>
+                                        Salvar escala
+                                    </button>
+                                    <button 
+                                        class="btn btn-outline-danger" 
+                                        @click="clearScheduleIndex(saturdays[currentSaturdayIndex])"
+                                    >
+                                        <i class="fas fa-trash-alt me-1"></i>
+                                        Limpar escala
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -93,8 +132,22 @@
                             >
                                 <div class="col-md-12">
                                     <div class="w-100 btn-group btn-group-sm" role="group" aria-label="Default button group">
-                                        <button class="btn btn-success" @click="prevSunday" :disabled="currentSundayIndex === 0">Anterior</button>
-                                        <button class="btn btn-success" @click="nextSunday" :disabled="currentSundayIndex === sundays.length - 1">Próximo</button>
+                                        <button 
+                                            class="btn btn-dark" 
+                                            @click="prevSunday" 
+                                            :disabled="currentSundayIndex === 0"
+                                        >    
+                                            <i class="fas fa-chevron-left ms-1"></i>
+                                            Anterior
+                                        </button>
+                                        <button 
+                                            class="btn btn-dark" 
+                                            @click="nextSunday" 
+                                            :disabled="currentSundayIndex === sundays.length - 1"
+                                        >
+                                            Próximo
+                                            <i class="fas fa-chevron-right ms-1"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -104,7 +157,6 @@
                                 <el-select 
                                     v-model="schedule[sundays[currentSundayIndex]][sector.id]" 
                                     multiple
-                                    filterable
                                     :reserve-keyword="true"
                                     placeholder="Selecione os trabalhadores"
                                 >
@@ -121,8 +173,20 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="w-100 btn-group" role="group" aria-label="Default button group">
-                                    <button class="btn btn-success" @click="saveScheduleIndex(schedule[sundays[currentSundayIndex]], sundays[currentSundayIndex])">Salvar</button>
-                                    <button class="btn btn-success" @click="clearScheduleIndex(sundays[currentSundayIndex])">Limpar </button>
+                                    <button 
+                                        class="btn btn-outline-success" 
+                                        @click="saveScheduleIndex(schedule[sundays[currentSundayIndex]], sundays[currentSundayIndex])"
+                                    >
+                                        <i class="fas fa-check me-1"></i>
+                                        Salvar escala
+                                    </button>
+                                    <button 
+                                        class="btn btn-outline-danger"
+                                        @click="clearScheduleIndex(sundays[currentSundayIndex])"
+                                    >
+                                        <i class="fas fa-trash-alt me-1"></i>
+                                        Limpar escala
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -219,6 +283,9 @@ export default {
         };
     },
     methods: {
+		backToHome() {
+			this.$router.push({ name: 'Home' });
+		},
         getSaturdaysAndSundays() {
             const saturdays = [];
             const sundays = [];
