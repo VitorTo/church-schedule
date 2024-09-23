@@ -1,9 +1,9 @@
 <template>
-    <div class="content-scale">
+    <div class="scale-workes-edit">
         <div class="page-title mb-2 row">
             <div class="col-4 fs-6">
                 <button 
-                    class="btn btn-dark" 
+                    class="w-100 btn btn-dark" 
                     @click="backToHome()"
                 >
                     <i class="fas fa-arrow-left me-1"></i>
@@ -196,19 +196,27 @@
         </div>
 
         <!-- FEEDBACK -->
-        <el-dialog v-model="showDialogSave" title="Escala salva com sucesso!" width="500">
+        <el-dialog v-model="showDialogSave" title="Escala salva com sucesso!" width="330">
             <span>
-                Deseja compartilhar essa escala no WHATSAPP?
+                <div class="row">
+                    <div class="rounded m-2 py-2 border border-success col-11"
+                        v-html="getDetailsDay"
+                    ></div>
+                    <div class="col-12">
+                        Deseja compartilhar essa escala no WHATSAPP?
+                    </div>
+                </div>
             </span>
             <template #footer>
             <div class="dialog-footer">
                 <div class="row">
-                    <div class="col-4">
+                    <div class="col-5">
                         <button class="w-100 btn btn-secondary" @click="showDialogSave = false">Não, Voltar</button>
                     </div>
-                    <div class="col-4">
-                        <button class="w-100 btn btn-primary" @click="sharedToWhatsApp(currentDayIndex)">
-                            Compartilhar
+                    <div class="col">
+                        <button class="w-100 btn btn-success" @click="sharedToWhatsApp(currentDayIndex)">
+                            Compartilhar 
+                            <i class="fab fa-whatsapp ms-1"></i>
                         </button>
                     </div>
                 </div>
@@ -279,7 +287,8 @@ export default {
             currentSaturdayIndex: 0,
             currentSundayIndex: 0,
             currentDayIndex: null, 
-            month: null
+            month: null,
+            modeWhats: false
         };
     },
     methods: {
@@ -421,34 +430,12 @@ export default {
             }
         },
         sharedToWhatsApp() {
-            const details = Object.keys(this.schedule).map(date => {
-                if(date == this.currentDayIndex) {
-                    const { dayOfWeek, formattedDate } = this.preFormatDate(date);
-                    const scale = this.schedule[date];
-    
-                    const sectorsText = this.sectors.map(sector => {
-                        const sectorId = sector?.id;
-                        const sectorName = sector?.name;
-    
-                        const sectorWorkers = this.workers
-                            .filter(worker => scale[sectorId]?.includes(worker.id))
-                            .map(worker => capitalize(worker.name));
-    
-                        if (sectorWorkers?.length > 0) {
-                            return `${sectorName.toUpperCase()}: *${sectorWorkers.toUpperCase().join('*, ')}`;
-                        } else {
-                            return null;
-                        }
-                    }).filter(value => value).join('\n');
-    
-                    return `*${dayOfWeek.toUpperCase()}* - *${formattedDate.toLocaleDateString('pt-BR')}*\n\n${sectorsText}`;
-                }
-            }).join('\n');
-
-            const message = encodeURIComponent(`Escala da Igreja para o mês de ${this.months[this.month]}:\n\n${details.trim()}`);
-
+            this.modeWhats = true;
+            const details = this.getDetailsDay;
+            const message = encodeURIComponent(`Escala do mês de ${this.months[this.month]}:\n\n${details.trim()}`);
             const whatsappUrl = `https://api.whatsapp.com/send?text=${message}`;
             window.open(whatsappUrl, '_blank');
+            this.modeWhats = false;
         }
     },
     mounted() {
@@ -493,6 +480,40 @@ export default {
         },
         isViewMobile() {
             return isMobile()
+        },        
+        getDetailsDay() {
+            return Object.keys(this.schedule).map(date => {
+                if(date == this.currentDayIndex) {
+                    const { dayOfWeek, formattedDate } = this.preFormatDate(date);
+                    const scale = this.schedule[date];
+    
+                    const sectorsText = this.sectors.map(sector => {
+                        const sectorId = sector?.id;
+                        const sectorName = sector?.name;
+                        if(!sectorId && !sectorName) return null;
+
+                        const sectorWorkers = this.workers
+                            .filter(worker => scale[sectorId]?.includes(worker.id))
+                            .map(worker => capitalize(worker.name));
+    
+                        if (sectorWorkers?.length > 0) {
+                            if(this.modeWhats) {
+                                return `${sectorName?.toUpperCase()}: *${sectorWorkers.map(name => name.toUpperCase()).join(', ')}*`;
+                            } else {
+                                return `${sectorName?.toUpperCase()}: <b>${sectorWorkers.map(name => name.toUpperCase()).join(', ')}</b>`;
+                            }
+                        } else {
+                            return null;
+                        }
+                    }).filter(value => value).join(this.modeWhats ? '\n' : '<br>');
+                    
+                    if(this.modeWhats) {
+                        return `*${dayOfWeek?.toUpperCase()}* - *${formattedDate.toLocaleDateString('pt-BR')}*\n\n${sectorsText}`;
+                    } else {
+                        return `<b>${dayOfWeek?.toUpperCase()}</b> - <b>${formattedDate.toLocaleDateString('pt-BR')}</b><br>${sectorsText}`;
+                    }
+                }
+            }).join('\n');
         }
     }
 };

@@ -1,9 +1,9 @@
 <template>
-	<div class="container">
+	<div class="scale-workes-detail">
         <div class="page-title mb-2 row">
             <div class="col-4 fs-6">
                 <button 
-                    class="btn btn-dark" 
+                    class="w-100 btn btn-dark" 
                     @click="backToHome()"
                 >
                     <i class="fas fa-arrow-left me-1"></i>
@@ -15,17 +15,9 @@
             </div>
         </div>
         <hr class="mt-0">
-		<!-- <div class="row">
-			<div class="col-6">
-				<button @click="orderDate()" class="btn btn-success w-100">Organizar por data</button>
-			</div>
-			<div class="col-6">
-				<button @click="revertOrderDate()" class="btn btn-success w-100">Organizar por dias</button>
-			</div>
-		</div> -->
 		<div class="row">
 			<div class="col-12">
-				<button ref="btnShared" @click="captureScreen()" class="btn btn-success w-100">Enviar escala WhatsApp</button>
+				<button ref="btnShared" @click="captureScreen()" class="btn btn-dark w-100">Enviar escala WhatsApp <i class="fab fa-whatsapp ms-1"></i></button>
 			</div>
 		</div>
 		<hr>
@@ -33,12 +25,12 @@
 			<div class="col-md-4 mb-4" v-for="(day, index) in days" :key="index">
 				<div class="card h-100">
 					<div class="card-body">
-						<h5 class="card-title">{{ day.dayOfWeek }} - {{ formatDateValue(day.date , "DD/MM/YYYY")}}</h5>
+						<h5 class="card-title text-uppercase">{{ day.dayOfWeek }} - {{ formatDateValue(day.date , "DD/MM/YYYY")}}</h5>
 						<div v-if="day.sectors.length > 0" class="sector-and-worker">
 							<div v-for="(sector, index) in day.sectors" :key="index">
 								<div v-if="sector?.workers?.length > 0" class="values">
-									<strong>{{ sector?.name }}:</strong>
-									<span>{{ sector?.workers.join(', ') }}</span>
+									<strong class="text-uppercase">{{ sector?.name }}: </strong>
+									<span class="text-uppercase ms-1">{{ sector?.workers.join(', ') }}</span>
 								</div>
 							</div>
 						</div>
@@ -54,8 +46,12 @@
 			<p>Nenhum trabalhador encontrado para este mês.</p>
 		</div>
 		
-        <el-dialog v-model="showDialogSave" title="Escala copiada com sucesso!" width="500">
-            <span >
+        <el-dialog 
+			v-model="showDialogSave" 
+			title="Escala copiada com sucesso!" 
+			width="330"
+		>
+            <span>
                 Para compartilhar, abra o whatsapp e cole a imagem
             </span>
             <template #footer>
@@ -64,9 +60,9 @@
                     <div class="col-4">
                         <button class="w-100 btn btn-secondary" @click="showDialogSave = false">Fechar</button>
                     </div>
-                    <div class="col-4">
-                        <button class="w-100 btn btn-primary" @click="openSharedWhatsApp(currentDayIndex)">
-                            Abrir WhatsApp
+                    <div class="col">
+                        <button class="w-100 btn btn-success" @click="openSharedWhatsApp(currentDayIndex)">
+                            Abrir WhatsApp <i class="fab fa-whatsapp ms-1"></i>
                         </button>
                     </div>
                 </div>
@@ -174,7 +170,7 @@ export default {
 		revertOrderDate() {
 			this.days = [...this.detailsOrigin];
 		},
-		sendToWhatsApp() {
+		openSharedWhatsApp() {
 			const whatsappUrl = `https://wa.me/`;
 			window.open(whatsappUrl, '_blank');
 		}
