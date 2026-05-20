@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from '../views/Home.vue';
 import MonthDetail from '../views/MonthDetail.vue';
 import MonthEdit from '../views/MonthEdit.vue';
+import Workers from '../views/Workers.vue';
 
 // Definir as rotas
 const routes = [
@@ -23,6 +24,12 @@ const routes = [
     name: 'MonthEdit',
     component: MonthEdit,
     meta: { breadcrumb: 'Editar escala' }
+  },
+  {
+    path: '/workers',
+    name: 'Workers',
+    component: Workers,
+    meta: { breadcrumb: 'Trabalhadores' }
   }
 ];
 
